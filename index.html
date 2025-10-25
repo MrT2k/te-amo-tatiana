@@ -62,13 +62,16 @@
     }
 
     #inicio {
-      background: lime;
+      background: limegreen;
       top: 20px; left: 20px;
+      box-shadow: 0 0 10px limegreen;
     }
 
     #meta {
-      background: red;
+      background: white;
       bottom: 20px; right: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 15px white;
     }
 
     .pared {
@@ -214,6 +217,9 @@
       const meta = document.getElementById("meta");
       const paredes = document.querySelectorAll(".pared");
 
+      inicio.style.left = "20px";
+      inicio.style.top = "20px";
+
       function checkCollision(circle, rect) {
         const cRect = circle.getBoundingClientRect();
         const rRect = rect.getBoundingClientRect();
@@ -225,10 +231,9 @@
         );
       }
 
-      laberinto.addEventListener("touchmove", (e) => {
-        const touch = e.touches[0];
-        inicio.style.left = `${touch.clientX - 20}px`;
-        inicio.style.top = `${touch.clientY - 20}px`;
+      function mover(x, y) {
+        inicio.style.left = `${x - 20}px`;
+        inicio.style.top = `${y - 20}px`;
 
         for (let p of paredes) {
           if (checkCollision(inicio, p)) {
@@ -243,6 +248,15 @@
           ding.play();
           iniciarPregunta();
         }
+      }
+
+      laberinto.addEventListener("mousemove", (e) => {
+        if (e.buttons === 1) mover(e.clientX, e.clientY);
+      });
+
+      laberinto.addEventListener("touchmove", (e) => {
+        const touch = e.touches[0];
+        mover(touch.clientX, touch.clientY);
       }, { passive: false });
     }
 
