@@ -30,6 +30,30 @@
       text-align: center;
     }
 
+    h1, h2 {
+      color: #ff69b4;
+      text-shadow: 0 0 10px #ff69b4;
+    }
+
+    /* Fase 1: Intro */
+    #intro {
+      flex-direction: column;
+      animation: aparecer 1s ease forwards;
+    }
+
+    #mensaje {
+      font-size: 1.8rem;
+      max-width: 80%;
+      line-height: 1.5;
+      opacity: 0;
+      animation: fadeIn 3s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
     /* Laberinto */
     #laberinto {
       background: #111;
@@ -53,13 +77,15 @@
       height: 40px;
       background: white;
       position: absolute;
-      right: 30px;
-      bottom: 30px;
+      right: 40px;
+      bottom: 40px;
+      box-shadow: 0 0 10px white;
     }
 
     .pared {
       position: absolute;
       background: #ff69b4;
+      border-radius: 10px;
     }
 
     .p1 { top: 100px; left: 0; width: 80%; height: 20px; }
@@ -70,6 +96,7 @@
     #pregunta {
       flex-direction: column;
       gap: 20px;
+      text-align: center;
     }
 
     button {
@@ -105,9 +132,9 @@
   </style>
 </head>
 <body>
-  <!-- Fase 1: Intro -->
+  <!-- Fase 1: Mensaje inicial -->
   <div id="intro" class="pantalla center" style="display:flex;">
-    <h1 id="mensaje">💞 Tatiana, este juego es para ti 💞</h1>
+    <h1 id="mensaje">Hola amor 💖<br><br> Sé que desde hace un tiempo estabas esperando esto...<br><br> Así que... disfrútalo 😘</h1>
   </div>
 
   <!-- Fase 2: Laberinto -->
@@ -138,11 +165,11 @@
     const pregunta = document.getElementById("pregunta");
     const mensajeFinal = document.getElementById("mensaje-final");
 
-    // Fase inicial
+    // Mostrar mensaje inicial y luego pasar al laberinto
     setTimeout(() => {
       intro.style.display = "none";
       iniciarLaberinto();
-    }, 2000);
+    }, 7000); // 7 segundos para leer el mensaje
 
     function iniciarLaberinto() {
       laberinto.style.display = "block";
