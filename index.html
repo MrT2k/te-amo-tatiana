@@ -54,11 +54,12 @@
       100% { opacity: 1; transform: scale(1); }
     }
 
-    /* Laberinto */
+    /* Fase 2: Laberinto */
     #laberinto {
       background: #111;
       position: relative;
       overflow: hidden;
+      cursor: crosshair;
     }
 
     #inicio {
@@ -69,7 +70,7 @@
       position: absolute;
       left: 20px;
       top: 20px;
-      transition: 0.1s;
+      transition: 0.05s;
     }
 
     #meta {
@@ -92,11 +93,12 @@
     .p2 { top: 250px; left: 20%; width: 80%; height: 20px; }
     .p3 { top: 400px; left: 0; width: 80%; height: 20px; }
 
-    /* Pregunta */
+    /* Fase 3: Pregunta */
     #pregunta {
       flex-direction: column;
       gap: 20px;
       text-align: center;
+      display: none; /* 🔥 Importante: oculta al inicio */
     }
 
     button {
@@ -115,7 +117,7 @@
       background: #ff1493;
     }
 
-    /* Final */
+    /* Fase 4: Final */
     #mensaje-final {
       display: none;
       flex-direction: column;
@@ -134,7 +136,11 @@
 <body>
   <!-- Fase 1: Mensaje inicial -->
   <div id="intro" class="pantalla center" style="display:flex;">
-    <h1 id="mensaje">Hola amor 💖<br><br> Sé que desde hace un tiempo estabas esperando esto...<br><br> Así que... disfrútalo 😘</h1>
+    <h1 id="mensaje">
+      Hola amor 💖<br><br>
+      Sé que desde hace un tiempo estabas esperando esto...<br><br>
+      Así que... disfrútalo 😘
+    </h1>
   </div>
 
   <!-- Fase 2: Laberinto -->
@@ -165,17 +171,18 @@
     const pregunta = document.getElementById("pregunta");
     const mensajeFinal = document.getElementById("mensaje-final");
 
-    // Mostrar mensaje inicial y luego pasar al laberinto
+    // Espera el mensaje y luego inicia el laberinto
     setTimeout(() => {
       intro.style.display = "none";
       iniciarLaberinto();
-    }, 7000); // 7 segundos para leer el mensaje
+    }, 7000);
 
     function iniciarLaberinto() {
       laberinto.style.display = "block";
       const inicio = document.getElementById("inicio");
       const meta = document.getElementById("meta");
       const paredes = document.querySelectorAll(".pared");
+      let moviendo = false;
 
       function checkCollision(a, b) {
         const A = a.getBoundingClientRect();
@@ -184,8 +191,8 @@
       }
 
       function mover(x, y) {
-        inicio.style.left = `${x - 15}px`;
-        inicio.style.top = `${y - 15}px`;
+        inicio.style.left = `${x - laberinto.offsetLeft - 15}px`;
+        inicio.style.top = `${y - laberinto.offsetTop - 15}px`;
 
         for (let p of paredes) {
           if (checkCollision(inicio, p)) {
@@ -202,18 +209,27 @@
         }
       }
 
+      // Movimiento con mouse
+      laberinto.addEventListener("mousedown", () => moviendo = true);
+      laberinto.addEventListener("mouseup", () => moviendo = false);
+      laberinto.addEventListener("mouseleave", () => moviendo = false);
+
       laberinto.addEventListener("mousemove", (e) => {
-        if (e.buttons === 1) mover(e.clientX, e.clientY);
+        if (moviendo) mover(e.clientX, e.clientY);
       });
 
+      // Movimiento táctil (celulares)
+      laberinto.addEventListener("touchstart", () => moviendo = true);
+      laberinto.addEventListener("touchend", () => moviendo = false);
       laberinto.addEventListener("touchmove", (e) => {
+        if (!moviendo) return;
         const touch = e.touches[0];
         mover(touch.clientX, touch.clientY);
       }, { passive: false });
     }
 
     function iniciarPregunta() {
-      pregunta.style.display = "flex";
+      pregunta.style.display = "flex"; // 🔥 Ahora sí aparece solo al ganar
       const si = document.getElementById("si");
       const no = document.getElementById("no");
 
