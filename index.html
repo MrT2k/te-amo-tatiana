@@ -98,7 +98,7 @@
       flex-direction: column;
       gap: 20px;
       text-align: center;
-      display: none; /* 🔥 Importante: oculta al inicio */
+      display: none;
     }
 
     button {
@@ -117,24 +117,68 @@
       background: #ff1493;
     }
 
-    /* Fase 4: Final */
-    #mensaje-final {
+    /* Fase 4: Final con estrellas */
+    #final {
       display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      animation: aparecer 2s ease forwards;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at bottom, #0a0a0a 0%, #000 100%);
+      overflow: hidden;
+      position: relative;
+    }
+
+    canvas#fireworks {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #mensaje-final {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      opacity: 0;
+      animation: aparecer 3s ease forwards;
+      animation-delay: 3s;
+    }
+
+    #mensaje-final h1 {
+      font-size: 2.5rem;
+      color: #ffb6c1;
+      text-shadow: 0 0 15px #ff69b4;
+    }
+
+    #mensaje-final p {
+      font-size: 1.2rem;
+      color: #fff;
     }
 
     @keyframes aparecer {
       from { opacity: 0; }
       to { opacity: 1; }
     }
+
+    .estrella {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: parpadeo 2s infinite ease-in-out;
+    }
+
+    @keyframes parpadeo {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 1; }
+    }
   </style>
 </head>
 <body>
-  <!-- Fase 1: Mensaje inicial -->
+  <!-- Fase 1 -->
   <div id="intro" class="pantalla center" style="display:flex;">
     <h1 id="mensaje">
       Hola amor 💖<br><br>
@@ -143,7 +187,7 @@
     </h1>
   </div>
 
-  <!-- Fase 2: Laberinto -->
+  <!-- Fase 2 -->
   <div id="laberinto" class="pantalla">
     <div id="inicio"></div>
     <div id="meta"></div>
@@ -152,7 +196,7 @@
     <div class="pared p3"></div>
   </div>
 
-  <!-- Fase 3: Pregunta -->
+  <!-- Fase 3 -->
   <div id="pregunta" class="pantalla center">
     <h2>¿Me amas? 💘</h2>
     <button id="si">SÍ 💞</button>
@@ -160,18 +204,21 @@
   </div>
 
   <!-- Fase 4: Final -->
-  <div id="mensaje-final" class="center">
-    <h1>💫 Te amo Tatiana 💫</h1>
-    <p>Gracias por estos hermosos 4 meses de risas, cariño y locuras juntos 💕</p>
+  <div id="final" class="pantalla">
+    <canvas id="fireworks"></canvas>
+    <div id="mensaje-final">
+      <h1>💫 Te amo Tatiana 💫</h1>
+      <p>Gracias por estos hermosos 4 meses de risas, cariño y locuras juntos 💕</p>
+    </div>
   </div>
 
   <script>
     const intro = document.getElementById("intro");
     const laberinto = document.getElementById("laberinto");
     const pregunta = document.getElementById("pregunta");
-    const mensajeFinal = document.getElementById("mensaje-final");
+    const final = document.getElementById("final");
 
-    // Espera el mensaje y luego inicia el laberinto
+    // ⏳ Espera el mensaje inicial y pasa al laberinto
     setTimeout(() => {
       intro.style.display = "none";
       iniciarLaberinto();
@@ -209,16 +256,13 @@
         }
       }
 
-      // Movimiento con mouse
       laberinto.addEventListener("mousedown", () => moviendo = true);
       laberinto.addEventListener("mouseup", () => moviendo = false);
       laberinto.addEventListener("mouseleave", () => moviendo = false);
-
       laberinto.addEventListener("mousemove", (e) => {
         if (moviendo) mover(e.clientX, e.clientY);
       });
 
-      // Movimiento táctil (celulares)
       laberinto.addEventListener("touchstart", () => moviendo = true);
       laberinto.addEventListener("touchend", () => moviendo = false);
       laberinto.addEventListener("touchmove", (e) => {
@@ -229,7 +273,7 @@
     }
 
     function iniciarPregunta() {
-      pregunta.style.display = "flex"; // 🔥 Ahora sí aparece solo al ganar
+      pregunta.style.display = "flex";
       const si = document.getElementById("si");
       const no = document.getElementById("no");
 
@@ -244,7 +288,80 @@
     }
 
     function mostrarFinal() {
-      mensajeFinal.style.display = "flex";
+      final.style.display = "block";
+      generarEstrellas(100);
+      iniciarFuegosArtificiales();
+    }
+
+    // 🌟 Cielo estrellado
+    function generarEstrellas(num) {
+      for (let i = 0; i < num; i++) {
+        const estrella = document.createElement("div");
+        estrella.classList.add("estrella");
+        estrella.style.top = Math.random() * 100 + "%";
+        estrella.style.left = Math.random() * 100 + "%";
+        estrella.style.animationDelay = Math.random() * 2 + "s";
+        final.appendChild(estrella);
+      }
+    }
+
+    // 🎆 Fuegos artificiales
+    function iniciarFuegosArtificiales() {
+      const canvas = document.getElementById("fireworks");
+      const ctx = canvas.getContext("2d");
+      canvas.width = innerWidth;
+      canvas.height = innerHeight;
+
+      const fireworks = [];
+
+      class Particle {
+        constructor(x, y, color, speed, angle) {
+          this.x = x;
+          this.y = y;
+          this.color = color;
+          this.speed = speed;
+          this.angle = angle;
+          this.alpha = 1;
+        }
+        update() {
+          this.x += Math.cos(this.angle) * this.speed;
+          this.y += Math.sin(this.angle) * this.speed;
+          this.alpha -= 0.02;
+        }
+        draw() {
+          ctx.globalAlpha = this.alpha;
+          ctx.fillStyle = this.color;
+          ctx.beginPath();
+          ctx.arc(this.x, this.y, 2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+      }
+
+      function launchFirework() {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height * 0.5;
+        const color = `hsl(${Math.random() * 360}, 100%, 70%)`;
+
+        for (let i = 0; i < 50; i++) {
+          const angle = (Math.PI * 2 * i) / 50;
+          fireworks.push(new Particle(x, y, color, Math.random() * 4 + 1, angle));
+        }
+      }
+
+      function animate() {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        fireworks.forEach((p, i) => {
+          p.update();
+          p.draw();
+          if (p.alpha <= 0) fireworks.splice(i, 1);
+        });
+        requestAnimationFrame(animate);
+      }
+
+      animate();
+      setInterval(launchFirework, 1000);
     }
   </script>
 </body>
