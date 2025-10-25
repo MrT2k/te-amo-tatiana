@@ -47,30 +47,36 @@
 
     button:hover { background-color: #ff1493; }
 
-    /* Laberinto */
+    /* ===== LABERINTO ===== */
     #laberinto {
-      background: #111;
       position: relative;
+      width: 800px;
+      height: 500px;
+      background: #111;
+      border: 3px solid white;
       display: none;
+      overflow: hidden;
+      border-radius: 10px;
     }
 
     #inicio, #meta {
       position: absolute;
       width: 40px;
       height: 40px;
-      border-radius: 50%;
     }
 
     #inicio {
       background: limegreen;
+      border-radius: 50%;
       top: 20px; left: 20px;
       box-shadow: 0 0 10px limegreen;
     }
 
     #meta {
       background: white;
-      bottom: 20px; right: 20px;
       border-radius: 5px;
+      right: 30px;
+      bottom: 30px;
       box-shadow: 0 0 15px white;
     }
 
@@ -79,9 +85,11 @@
       background: #444;
     }
 
-    .p1 { top: 100px; left: 50px; width: 80%; height: 20px; }
-    .p2 { top: 200px; left: 0; width: 70%; height: 20px; }
-    .p3 { top: 300px; right: 0; width: 60%; height: 20px; }
+    /* Ejemplo de paredes */
+    .p1 { top: 100px; left: 50px; width: 700px; height: 15px; }
+    .p2 { top: 200px; left: 0; width: 600px; height: 15px; }
+    .p3 { top: 300px; left: 200px; width: 600px; height: 15px; }
+    .p4 { top: 400px; left: 0; width: 700px; height: 15px; }
 
     /* Final */
     #mensaje-final {
@@ -117,12 +125,15 @@
   <canvas id="pacman" class="pantalla"></canvas>
 
   <!-- Fase 3: Laberinto -->
-  <div id="laberinto" class="pantalla">
-    <div id="inicio"></div>
-    <div id="meta"></div>
-    <div class="pared p1"></div>
-    <div class="pared p2"></div>
-    <div class="pared p3"></div>
+  <div class="pantalla center" id="laberinto-pantalla">
+    <div id="laberinto">
+      <div id="inicio"></div>
+      <div id="meta"></div>
+      <div class="pared p1"></div>
+      <div class="pared p2"></div>
+      <div class="pared p3"></div>
+      <div class="pared p4"></div>
+    </div>
   </div>
 
   <!-- Fase 4: Pregunta -->
@@ -146,17 +157,18 @@
     const ding = document.getElementById("ding");
     const fireworkSound = document.getElementById("firework");
 
-    // --- FASE 1: MENSAJE INICIAL ---
-    const mensaje = "Hola amor 💖, desde hace un tiempo estás esperando esto... así que... disfrútalo 💕";
-    let i = 0;
-
+    // --- FASES ---
     const intro = document.getElementById("intro");
     const canvasPacman = document.getElementById("pacman");
+    const laberintoPantalla = document.getElementById("laberinto-pantalla");
     const laberinto = document.getElementById("laberinto");
     const pregunta = document.getElementById("pregunta");
     const finalCanvas = document.getElementById("final");
     const mensajeFinal = document.getElementById("mensaje-final");
 
+    // --- FASE 1: MENSAJE INICIAL ---
+    const mensaje = "Hola amor 💖, desde hace un tiempo estás esperando esto... así que... disfrútalo 💕";
+    let i = 0;
     intro.style.display = "flex";
 
     function escribir() {
@@ -212,7 +224,7 @@
 
     // --- FASE 3: LABERINTO ---
     function iniciarLaberinto() {
-      laberinto.style.display = "block";
+      laberintoPantalla.style.display = "flex";
       const inicio = document.getElementById("inicio");
       const meta = document.getElementById("meta");
       const paredes = document.querySelectorAll(".pared");
@@ -232,19 +244,28 @@
       }
 
       function mover(x, y) {
-        inicio.style.left = `${x - 20}px`;
-        inicio.style.top = `${y - 20}px`;
+        // Convertir coordenadas globales a relativas del laberinto
+        const rect = laberinto.getBoundingClientRect();
+        let posX = x - rect.left - 20;
+        let posY = y - rect.top - 20;
+
+        // Limitar dentro del laberinto
+        posX = Math.max(0, Math.min(posX, rect.width - 40));
+        posY = Math.max(0, Math.min(posY, rect.height - 40));
+
+        inicio.style.left = `${posX}px`;
+        inicio.style.top = `${posY}px`;
 
         for (let p of paredes) {
           if (checkCollision(inicio, p)) {
-            alert("¡Oh no! Tocaste una pared, encerio?? 🙄🙄.");
+            alert("¡Oh no! Tocaste una pared 😅. Intenta otra vez.");
             iniciarLaberinto();
             return;
           }
         }
 
         if (checkCollision(inicio, meta)) {
-          laberinto.style.display = "none";
+          laberintoPantalla.style.display = "none";
           ding.play();
           iniciarPregunta();
         }
