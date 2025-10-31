@@ -3,116 +3,98 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Para Ti 💖</title>
+  <title>Para ti, mi amor 💖</title>
   <style>
     body {
       margin: 0;
-      background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
-      color: #ffb6c1;
+      padding: 0;
+      background: linear-gradient(to bottom right, #000, #1a001a);
+      color: white;
       font-family: "Poppins", sans-serif;
-      height: 100vh;
+      min-height: 100vh;
+      overflow-x: hidden;
+      overflow-y: auto; /* 💖 permite desplazarse verticalmente */
       display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: hidden;
       flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 50px 20px;
+      box-sizing: border-box;
+    }
+
+    h1 {
       text-align: center;
-    }
-
-    #mensaje {
-      max-width: 800px;
       font-size: 1.5rem;
-      line-height: 1.7;
-      white-space: pre-line;
+      line-height: 1.8;
+      color: #ffb6c1;
+      text-shadow: 0 0 10px #ff69b4;
+      max-width: 600px;
       opacity: 0;
-      animation: aparecer 1s ease forwards;
+      white-space: pre-line;
     }
 
-    @keyframes aparecer {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    #continuar {
-      display: none;
-      margin-top: 40px;
+    button {
       background: #ff69b4;
       border: none;
-      color: white;
-      font-size: 1.2rem;
       padding: 15px 40px;
-      border-radius: 30px;
+      font-size: 1.2rem;
+      border-radius: 25px;
+      color: white;
       cursor: pointer;
+      margin-top: 50px;
       transition: 0.3s;
-      box-shadow: 0 0 15px #ff69b4;
+      opacity: 0;
     }
 
-    #continuar:hover {
+    button:hover {
       background: #ff1493;
       transform: scale(1.05);
-      box-shadow: 0 0 25px #ff69b4;
     }
 
-    /* Estrellitas sutiles en el fondo */
-    .estrella {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
-      border-radius: 50%;
-      opacity: 0.5;
-      animation: parpadeo 2s infinite ease-in-out;
+    @keyframes aparecerLetra {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
-    @keyframes parpadeo {
-      0%, 100% { opacity: 0.2; }
-      50% { opacity: 1; }
+    @keyframes fadeInButton {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-  <div id="mensaje"></div>
-  <button id="continuar">Continuar 💞</button>
+  <h1 id="mensaje"></h1>
+  <button id="continuar" onclick="window.location.href='juego.html'">Continuar 💞</button>
 
   <script>
-    // 🌟 Generar estrellas decorativas
-    for (let i = 0; i < 80; i++) {
-      const estrella = document.createElement("div");
-      estrella.classList.add("estrella");
-      estrella.style.top = Math.random() * 100 + "%";
-      estrella.style.left = Math.random() * 100 + "%";
-      estrella.style.animationDelay = Math.random() * 2 + "s";
-      document.body.appendChild(estrella);
-    }
+    const mensaje = `Hola amor 💖
 
-    // ✨ Texto que aparecerá letra por letra
-    const texto = `Hola amor 💖
+Este es mi pequeño regalo que he logrado crear, y sé que lo has esperado durante un buen tiempo... 
+Así que me gustaría que valiera la pena.
 
-Este es mi pequeño regalo que logré crear, y sé que lo has esperado durante un buen tiempo.  
-Quiero que valga la pena, porque deseo decirte que eres lo mejor que me ha pasado jamás.  
-Me encanta estar en una relación contigo; desde que nos conocimos siempre logras hacerme reír, llorar, alegrarme y hasta enojarme... pero todo eso me hace amarte aún más. 💕
+Quiero decirte que eres lo mejor que me ha pasado jamás, y me encanta estar en una relación contigo 💫
 
-Nos conocimos en Animal Simulator, y mientras tú escuchabas una música (que no era precisamente de mi agrado >:V), el destino decidió hacer su magia... y unió nuestros lazos para siempre. 💫`;
+Desde que nos conocimos, siempre me has hecho reír, llorar, alegrarme y enojarme — pero todo contigo siempre vale la pena 💕
 
-    const mensaje = document.getElementById("mensaje");
-    const continuar = document.getElementById("continuar");
+Nos conocimos en Animal Simulator, y aunque escuchabas una música (que no era precisamente de mi gusto >:V), el destino hizo su trabajo... 
+y unió nuestros lazos para siempre 💖`;
+
+    const textoElemento = document.getElementById("mensaje");
+    const boton = document.getElementById("continuar");
+
     let i = 0;
-
     function escribir() {
-      if (i < texto.length) {
-        mensaje.innerHTML += texto.charAt(i);
+      if (i < mensaje.length) {
+        textoElemento.textContent += mensaje.charAt(i);
+        textoElemento.style.opacity = 1;
         i++;
-        setTimeout(escribir, 50); // velocidad de aparición (ms)
+        setTimeout(escribir, 50); // velocidad de escritura (puedes ajustar)
       } else {
-        continuar.style.display = "inline-block";
+        boton.style.animation = "fadeInButton 2s forwards";
       }
     }
 
-    escribir();
-
-    continuar.onclick = () => {
-      window.location.href = "minijuego.html"; // Cambia por el nombre de tu siguiente página
-    };
+    window.onload = escribir;
   </script>
 </body>
 </html>
